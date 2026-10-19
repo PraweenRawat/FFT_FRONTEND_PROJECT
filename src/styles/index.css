@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-slate: #344453;
+  --color-slate-dark: #3A2E3E;
+  --color-slate-light: #715F76;
+  --color-golden-ochre: #DA9A2F;
+  --color-golden-ochre-hover: '#E58A3C';
+  --color-cool-gray: #A3B2B1;
+  --color-cool-gray-light: #EDF2F2;
+  --color-charcoal: #1E1B24;
+}
+
+@layer base {
+  body {
+    @apply bg-[#F9F9FB] text-slate-900 font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-slate-800 tracking-tight font-bold;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1EFF2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C3B5C6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8A7690;
+}
+
+/* Custom UI utility classes */
+.badge-lowest-price {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+
+.badge-low-stock {
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+.badge-tier {
+  background-color: #FDF8ED;
+  color: #BC512F;
+  border: 1px solid #FCEAC6;
+}
+
+.table-row-hover:hover {
+  background-color: #F8F6F9;
+}
