@@ -28,10 +28,11 @@ export default function WholesalerDashboard() {
   useEffect(() => {
     async function loadWholesalerData() {
       try {
+        const supplierId = user?.id || user?._id || 'sup-001';
         const [metRes, prodRes, ordRes] = await Promise.all([
-          api.getWholesalerMetrics('sup-001'),
-          api.getProducts({ supplierId: 'sup-001' }),
-          api.getOrders({ supplierId: 'sup-001' })
+          api.getWholesalerMetrics(supplierId),
+          api.getProducts({ supplierId }),
+          api.getOrders({ supplierId })
         ]);
         if (metRes.success) setMetrics(metRes.data);
         if (prodRes.success) setProducts(prodRes.data);
@@ -43,7 +44,7 @@ export default function WholesalerDashboard() {
       }
     }
     loadWholesalerData();
-  }, []);
+  }, [user]);
 
   const lowStockItems = products.filter(p => Number(p.stock) <= 10);
 

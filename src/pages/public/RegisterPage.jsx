@@ -50,7 +50,7 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -77,21 +77,21 @@ export default function RegisterPage() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      try {
-        const res = register({ ...formData, role });
-        if (res.success) {
-          setSuccess(`Business registered as verified ${role === 'wholesaler' ? 'Wholesaler' : 'Retailer'}! Launching portal...`);
-          setTimeout(() => {
-            navigate(role === 'wholesaler' ? '/wholesaler/dashboard' : '/retailer/dashboard');
-          }, 900);
-        }
-      } catch (err) {
-        setError(err.message || 'Registration failed');
-      } finally {
-        setLoading(false);
+    try {
+      const res = await register({ ...formData, role });
+      if (res.success) {
+        setSuccess(`Business registered as verified ${role === 'wholesaler' ? 'Wholesaler' : 'Retailer'}! Launching portal...`);
+        setTimeout(() => {
+          navigate(role === 'wholesaler' ? '/wholesaler/dashboard' : '/retailer/dashboard');
+        }, 900);
+      } else {
+        setError(res.error || 'Registration failed');
       }
-    }, 500);
+    } catch (err) {
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

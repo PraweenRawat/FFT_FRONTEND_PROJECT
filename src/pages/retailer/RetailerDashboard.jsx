@@ -30,7 +30,7 @@ export default function RetailerDashboard() {
     async function loadDashboardData() {
       try {
         const [ordersRes, compRes] = await Promise.all([
-          api.getOrders({ retailerId: 'ret-001' }),
+          api.getOrders(),
           api.getPriceComparisonGroups()
         ]);
         if (ordersRes.success) setOrders(ordersRes.data);

@@ -70,7 +70,7 @@ export default function LoginPage() {
     return authenticatedRole === 'wholesaler' ? '/wholesaler/dashboard' : '/retailer/dashboard';
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -92,32 +92,32 @@ export default function LoginPage() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      try {
-        const result = login(role, email, password);
-        if (result.success) {
-          const destination = getDestination(role);
-          setSuccess(`Authenticated as ${role === 'wholesaler' ? 'Wholesaler' : 'Retailer'}! Directing to ${destination}...`);
-          setTimeout(() => {
-            navigate(destination, { replace: true });
-          }, 400);
-        }
-      } catch (err) {
-        setError(err.message || 'Login failed. Please check your credentials.');
-      } finally {
-        setLoading(false);
+    try {
+      const result = await login(role, email, password);
+      if (result.success) {
+        const destination = getDestination(result.user?.role || role);
+        setSuccess(`Authenticated as ${result.user?.role === 'wholesaler' ? 'Wholesaler' : 'Retailer'}! Directing to ${destination}...`);
+        setTimeout(() => {
+          navigate(destination, { replace: true });
+        }, 400);
+      } else {
+        setError(result.error || 'Login failed. Please check your credentials.');
       }
-    }, 300);
+    } catch (err) {
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDemoFill = (selectedRole) => {
     setRole(selectedRole);
     if (selectedRole === 'retailer') {
       setEmail('retailer@stocklink.demo');
-      setPassword('demo1234');
+      setPassword('demo1234password');
     } else {
       setEmail('wholesaler@stocklink.demo');
-      setPassword('demo1234');
+      setPassword('demo1234password');
     }
     setError('');
   };

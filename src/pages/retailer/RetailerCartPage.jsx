@@ -47,38 +47,28 @@ export default function RetailerCartPage() {
     }
 
     setIsSubmitting(true);
-    const placed = [];
 
     try {
-      // Split order creation per supplier
-      for (const group of supplierEntries) {
-        const orderPayload = {
-          retailerId: user?.id || 'ret-001',
-          retailerName: user?.businessName || 'Metro Superstore & Stationery',
-          retailerCity: user?.city || 'Pune',
-          supplierId: group.supplierId,
-          supplierName: group.supplierName,
-          items: group.items.map(i => ({
-            productId: i.productId,
-            productName: i.name,
-            quantity: i.quantity,
-            unitPrice: i.unitPrice,
-            total: i.unitPrice * i.quantity
-          })),
-          totalAmount: group.subtotal,
-          shippingAddress: user?.address || 'Plot 18, Commercial Street, Shivajinagar, Pune 411005',
-          paymentMethod: paymentTerms
-        };
+      const idempotencyKey = `idemp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const checkoutPayload = {
+        items: cartItems.map(i => ({
+          productId: i.productId,
+          quantity: i.quantity
+        })),
+        shippingAddress: user?.address || 'Plot 18, Commercial Street, Shivajinagar, Pune 411005',
+        paymentMethod: paymentTerms,
+        idempotencyKey
+      };
 
-        const res = await api.createOrder(orderPayload);
-        if (res.success) {
-          placed.push(res.data);
-        }
+      const res = await api.checkout(checkoutPayload);
+      if (res.success) {
+        const orders = res.data?.orders || [res.data];
+        setCreatedOrders(orders);
+        clearCart();
+        setCheckoutModalOpen(true);
+      } else {
+        alert('Checkout failed: ' + (res.error || 'Server validation failed'));
       }
-
-      setCreatedOrders(placed);
-      clearCart();
-      setCheckoutModalOpen(true);
     } catch (err) {
       alert('Order placement error: ' + err.message);
     } finally {
@@ -344,10 +334,10 @@ export default function RetailerCartPage() {
 
               <div className="space-y-2.5 text-left bg-gray-50 p-4 rounded-2xl text-xs">
                 {createdOrders.map(ord => (
-                  <div key={ord.id} className="p-3 bg-white rounded-xl border border-gray-200 flex items-center justify-between">
+                  <div key={ord.orderNumber || ord.id || ord._id} className="p-3 bg-white rounded-xl border border-gray-200 flex items-center justify-between">
                     <div>
                       <p className="font-bold text-slate-800">{ord.supplierName}</p>
-                      <p className="text-gray-400 font-mono text-[11px]">{ord.id}</p>
+                      <p className="text-gray-400 font-mono text-[11px]">{ord.orderNumber || ord.id}</p>
                     </div>
                     <div className="text-right">
                       <span className="font-extrabold text-[#344453]">₹{ord.totalAmount.toLocaleString('en-IN')}</span>

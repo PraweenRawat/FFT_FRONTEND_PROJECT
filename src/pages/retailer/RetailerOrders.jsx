@@ -25,7 +25,7 @@ export default function RetailerOrders() {
     async function loadOrders() {
       setLoading(true);
       try {
-        const res = await api.getOrders({ retailerId: 'ret-001', status: statusFilter });
+        const res = await api.getOrders({ status: statusFilter });
         if (res.success) setOrders(res.data);
       } catch (err) {
         console.error(err);
@@ -39,7 +39,9 @@ export default function RetailerOrders() {
   const filteredOrders = orders.filter(o => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    return o.id.toLowerCase().includes(q) || o.supplierName.toLowerCase().includes(q);
+    const orderIdStr = (o.orderNumber || o.id || o._id || '').toLowerCase();
+    const supplierStr = (o.supplierName || '').toLowerCase();
+    return orderIdStr.includes(q) || supplierStr.includes(q);
   });
 
   return (

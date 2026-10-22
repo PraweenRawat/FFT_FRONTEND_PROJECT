@@ -59,7 +59,9 @@ export default function WholesalerOrders() {
   const filtered = orders.filter(o => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    return o.id.toLowerCase().includes(q) || o.retailerName.toLowerCase().includes(q);
+    const orderIdStr = (o.orderNumber || o.id || o._id || '').toLowerCase();
+    const retailerStr = (o.retailerName || '').toLowerCase();
+    return orderIdStr.includes(q) || retailerStr.includes(q);
   });
 
   return (
